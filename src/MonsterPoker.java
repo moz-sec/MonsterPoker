@@ -13,8 +13,8 @@ public class MonsterPoker {
   int playerDeck[] = new int[5];
   int cpuDeck[] = new int[5];
   String monsters[] = { "スライム", "サハギン", "ドラゴン", "デュラハン", "シーサーペント" };
-  int monsterAttackPoint[] = { 10, 20, 30, 25, 30 };
-  int monsterDefencePoint[] = { 40, 20, 25, 15, 20 };
+  int monsterAp[] = { 10, 20, 30, 25, 30 };
+  int monsterDp[] = { 40, 20, 25, 15, 20 };
   int cpuExchangeCards[] = new int[5];
   String changeCard = new String();
   int playerYaku[] = new int[5];
@@ -45,11 +45,12 @@ public class MonsterPoker {
       this.playerDeck[i] = card.nextInt(5);
     }
     // カードの表示
-    System.out.print("[Player]");
-    for (int i = 0; i < playerDeck.length; i++) {
-      System.out.printf("%s ", this.monsters[playerDeck[i]]);
-    }
-    System.out.println();
+    printPlayerCard();
+    // System.out.print("[Player]");
+    // for (int i = 0; i < playerDeck.length; i++) {
+    //   System.out.printf("%s ", this.monsters[playerDeck[i]]);
+    // }
+    // System.out.println();
 
     // カードの交換
     System.out.println("カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
@@ -59,11 +60,12 @@ public class MonsterPoker {
         this.playerDeck[Character.getNumericValue(exchange.charAt(i)) - 1] = card.nextInt(5);
       }
       // カードの表示
-      System.out.print("[Player]");
-      for (int i = 0; i < playerDeck.length; i++) {
-        System.out.printf("%s ", this.monsters[playerDeck[i]]);
-      }
-      System.out.println();
+      printPlayerCard();
+      // System.out.print("[Player]");
+      // for (int i = 0; i < playerDeck.length; i++) {
+      //   System.out.printf("%s ", this.monsters[playerDeck[i]]);
+      // }
+      // System.out.println();
       System.out.println("もう一度カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
       exchange = scanner.nextLine();
       if (exchange.charAt(0) != '0') {
@@ -71,11 +73,12 @@ public class MonsterPoker {
           this.playerDeck[Character.getNumericValue(exchange.charAt(i)) - 1] = card.nextInt(5);
         }
         // カードの表示
-        System.out.print("[Player]");
-        for (int i = 0; i < playerDeck.length; i++) {
-          System.out.printf("%s ", this.monsters[playerDeck[i]]);
-        }
-        System.out.println();
+        printPlayerCard();
+        // System.out.print("[Player]");
+        // for (int i = 0; i < playerDeck.length; i++) {
+        //   System.out.printf("%s ", this.monsters[playerDeck[i]]);
+        // }
+        // System.out.println();
       }
     }
 
@@ -84,11 +87,12 @@ public class MonsterPoker {
       this.cpuDeck[i] = card.nextInt(5);
     }
     // カードの表示
-    System.out.print("[CPU]");
-    for (int i = 0; i < cpuDeck.length; i++) {
-      System.out.printf("%s ", this.monsters[cpuDeck[i]]);
-    }
-    System.out.println();
+    printCpuCard();
+    // System.out.print("[CPU]");
+    // for (int i = 0; i < cpuDeck.length; i++) {
+    //   System.out.printf("%s ", this.monsters[cpuDeck[i]]);
+    // }
+    // System.out.println();
 
     // 交換するカードの決定
     System.out.println("CPUが交換するカードを考えています・・・・・・");
@@ -133,11 +137,12 @@ public class MonsterPoker {
         this.cpuDeck[Character.getNumericValue(changeCard.charAt(i)) - 1] = card.nextInt(5);
       }
       // カードの表示
-      System.out.print("[CPU]");
-      for (int i = 0; i < cpuDeck.length; i++) {
-        System.out.printf("%s ", this.monsters[cpuDeck[i]]);
-      }
-      System.out.println();
+      printCpuCard();
+      // System.out.print("[CPU]");
+      // for (int i = 0; i < cpuDeck.length; i++) {
+      //   System.out.printf("%s ", this.monsters[cpuDeck[i]]);
+      // }
+      // System.out.println();
     }
 
     // 交換するカードの決定
@@ -183,11 +188,12 @@ public class MonsterPoker {
         this.cpuDeck[Character.getNumericValue(changeCard.charAt(i)) - 1] = card.nextInt(5);
       }
       // カードの表示
-      System.out.print("[CPU]");
-      for (int i = 0; i < cpuDeck.length; i++) {
-        System.out.printf("%s ", this.monsters[cpuDeck[i]]);
-      }
-      System.out.println();
+      printCpuCard();
+      // System.out.print("[CPU]");
+      // for (int i = 0; i < cpuDeck.length; i++) {
+      //   System.out.printf("%s ", this.monsters[cpuDeck[i]]);
+      // }
+      // System.out.println();
     }
   }
 
@@ -401,6 +407,22 @@ public class MonsterPoker {
     System.out.println("PlayerのHPは" + this.playerHitPoint);
     System.out.println("CPUのHPは" + this.cpuHitPoint);
 
+  }
+
+  public void printCpuCard(){
+    System.out.print("[CPU]");
+
+    for (int i = 0; i < cpuDeck.length; i++) {
+      System.out.printf("%s ", this.monsters[cpuDeck[i]]);
+    }
+    System.out.println();
+  }
+  public void printPlayerCard(){
+    System.out.print("[Player]");
+    for (int i = 0; i < playerDeck.length; i++) {
+      System.out.printf("%s ", this.monsters[playerDeck[i]]);
+    }
+    System.out.println();
   }
 
   public double getPlayerHp() {
