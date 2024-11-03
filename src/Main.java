@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 /**
  * Main
  */
@@ -15,22 +13,6 @@ public class Main {
      */
     public static void main(String[] args) throws InterruptedException {
         MonsterPoker mp = new MonsterPoker();
-        Scanner scanner = new Scanner(System.in);// 標準入力
-        while (true) {
-            mp.drawPhase(scanner);
-            mp.battlePhase();
-            if (mp.getPlayerHp() <= 0 && mp.getCpuHp() <= 0) {
-                System.out.println("引き分け！");
-            } else if (mp.getPlayerHp() <= 0) {
-                System.out.println("CPU Win!");
-            } else if (mp.getCpuHp() <= 0) {
-                System.out.println("Player Win!");
-            } else {
-                Thread.sleep(2000);
-                continue;
-            }
-            break;
-        }
-        scanner.close();
+        mp.run();
     }
 }
