@@ -161,34 +161,6 @@ class Player {
         }
         System.out.println();
     }
-
-    public double getPlayerHp() {
-        return this.hitPoint;
-    }
-
-    public double getplayerAttackPointRate() {
-        return this.AttackPointRate;
-    }
-
-    public void setplayerAttackPointRate(double playerAttackPointRate) {
-        this.AttackPointRate = playerAttackPointRate;
-    }
-
-    public double getplayerDefencePointRate() {
-        return this.DefencePointRate;
-    }
-
-    public void setplayerDefencePointRate(double playerDefencePointRate) {
-        this.DefencePointRate = playerDefencePointRate;
-    }
-
-    public double getplayerAttackPoint() {
-        return this.AttackPoint;
-    }
-
-    public void setplayerAttackPoint(double playerAttackPoint) {
-        this.AttackPoint = playerAttackPoint;
-    }
 }
 
 
@@ -307,11 +279,11 @@ public class MonsterPoker {
         while (true) {
             drawPhase(scanner);
             battlePhase();
-            if (player.getPlayerHp() <= 0 && cpu.getPlayerHp() <= 0) {
+            if (player.hitPoint <= 0 && cpu.hitPoint <= 0) {
                 System.out.println("引き分け！");
-            } else if (player.getPlayerHp() <= 0) {
+            } else if (player.hitPoint <= 0) {
                 System.out.println("CPU Win!");
-            } else if (cpu.getPlayerHp() <= 0) {
+            } else if (cpu.hitPoint <= 0) {
                 System.out.println("Player Win!");
             } else {
                 Thread.sleep(2000);
