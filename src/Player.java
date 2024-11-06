@@ -133,11 +133,14 @@ public class Player {
         }
         Thread.sleep(1000);
 
-        // APとDPの計算
+        calculatePoint();
+    }
+
+    private void calculatePoint() {
         for (int i = 0; i < this.yaku.length; i++) {
             if (this.yaku[i] >= 1) {
-                this.AttackPoint = this.AttackPoint + monsters.get(i).ap * this.yaku[i];
-                this.DefencePoint = this.DefencePoint + monsters.get(i).dp * this.yaku[i];
+                this.AttackPoint += monsters.get(i).ap * this.yaku[i];
+                this.DefencePoint += monsters.get(i).dp * this.yaku[i];
             }
         }
         this.AttackPoint = this.AttackPoint * this.AttackPointRate;
