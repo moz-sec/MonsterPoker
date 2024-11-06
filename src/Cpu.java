@@ -4,8 +4,8 @@
 public class Cpu extends Player {
     public int exchangeCards[] = new int[5];
 
-    public Cpu() {
-        super();
+    public Cpu(String name) {
+        super(name);
     }
 
     public void draw() throws InterruptedException {
@@ -13,7 +13,7 @@ public class Cpu extends Player {
         for (int i = 0; i < this.deck.length; i++) {
             this.deck[i] = card.nextInt(5);
         }
-        this.printCard("[CPU]");
+        this.printCard();
 
         // 交換するカードの決定
         this.decideExchangeCard();
@@ -53,7 +53,7 @@ public class Cpu extends Player {
                 this.deck[Character.getNumericValue(this.changeCard.charAt(i)) - 1] =
                         this.card.nextInt(5);
             }
-            this.printCard("[CPU]");
+            this.printCard();
         }
     }
 
@@ -81,28 +81,5 @@ public class Cpu extends Player {
                 }
             }
         }
-    }
-
-    public void attack(Player player) throws InterruptedException {
-        System.out.print("CPUのDrawした");
-        for (int i = 0; i < this.yaku.length; i++) {
-            if (this.yaku[i] >= 1) {
-                System.out.print(this.monsters.get(i).name + " ");
-                Thread.sleep(500);
-            }
-        }
-        System.out.print("の攻撃！");
-        Thread.sleep(1000);
-        System.out.println("Playerのモンスターによるガード！");
-        if (player.DefencePoint >= this.AttackPoint) {
-            System.out.println("Playerはノーダメージ！");
-        } else {
-            double damage = this.AttackPoint - player.DefencePoint;
-            System.out.printf("Playerは%.0fのダメージを受けた！\n", damage);
-            player.hitPoint = player.hitPoint - damage;
-        }
-
-        System.out.println("PlayerのHPは" + player.hitPoint);
-        System.out.println("CPUのHPは" + this.hitPoint);
     }
 }

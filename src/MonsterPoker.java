@@ -4,8 +4,8 @@ import java.util.Scanner;
  * MonsterPoker
  */
 public class MonsterPoker {
-    Player player = new Player();
-    Cpu cpu = new Cpu();
+    Player player = new Player("Player");
+    Cpu cpu = new Cpu("CPU");
 
     public void run() throws InterruptedException {
         Scanner scanner = new Scanner(System.in);// 標準入力
@@ -51,5 +51,8 @@ public class MonsterPoker {
         player.attack(cpu);
 
         cpu.attack(player);
+
+        System.out.println("PlayerのHPは" + player.hitPoint);
+        System.out.println("CPUのHPは" + cpu.hitPoint);
     }
 }

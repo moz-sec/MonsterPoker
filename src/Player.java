@@ -7,6 +7,7 @@ import java.util.Scanner;
  * Player
  */
 public class Player {
+    String name = new String();
     public List<Monster> monsters = new ArrayList<>();
     String changeCard = new String();
     boolean five = false;
@@ -26,7 +27,8 @@ public class Player {
     double AttackPoint = 0;
     double DefencePoint = 0;
 
-    public Player() {
+    public Player(String name) {
+        this.name = name;
         monsters.add(new Monster("スライム", 10, 40));
         monsters.add(new Monster("サハギン", 20, 20));
         monsters.add(new Monster("ドラゴン", 30, 25));
@@ -39,7 +41,7 @@ public class Player {
         for (int i = 0; i < this.deck.length; i++) {
             this.deck[i] = card.nextInt(5);
         }
-        this.printCard("[Player]");
+        this.printCard();
 
         // カードの交換
         System.out.println("カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
@@ -48,7 +50,7 @@ public class Player {
             for (int i = 0; i < exchange.length(); i++) {
                 this.deck[Character.getNumericValue(exchange.charAt(i)) - 1] = card.nextInt(5);
             }
-            this.printCard("[Player]");
+            this.printCard();
 
             System.out
                     .println("もう一度カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
@@ -57,7 +59,7 @@ public class Player {
                 for (int i = 0; i < exchange.length(); i++) {
                     this.deck[Character.getNumericValue(exchange.charAt(i)) - 1] = card.nextInt(5);
                 }
-                this.printCard("[Player]");
+                this.printCard();
             }
         }
     }
@@ -147,9 +149,8 @@ public class Player {
         this.DefencePoint = this.DefencePoint * this.DefencePointRate;
     }
 
-    public void attack(Cpu cpu) throws InterruptedException {
-        // Playerの攻撃
-        System.out.print("PlayerのDrawした");
+    public void attack(Player opponentPlayer) throws InterruptedException {
+        System.out.printf("%sのDrawした", this.name);
         for (int i = 0; i < this.yaku.length; i++) {
             if (this.yaku[i] >= 1) {
                 System.out.print(this.monsters.get(i).name + " ");
@@ -158,18 +159,18 @@ public class Player {
         }
         System.out.print("の攻撃！");
         Thread.sleep(1000);
-        System.out.println("CPUのモンスターによるガード！");
-        if (cpu.DefencePoint >= this.AttackPoint) {
-            System.out.println("CPUはノーダメージ！");
+        System.out.printf("%sのモンスターによるガード！\n", opponentPlayer.name);
+        if (opponentPlayer.DefencePoint >= this.AttackPoint) {
+            System.out.printf("%sはノーダメージ！\n", opponentPlayer.name);
         } else {
-            double damage = this.AttackPoint - cpu.DefencePoint;
-            System.out.printf("CPUは%.0fのダメージを受けた！\n", damage);
-            cpu.hitPoint = cpu.hitPoint - damage;
+            double damage = this.AttackPoint - opponentPlayer.DefencePoint;
+            System.out.printf("%sは%.0fのダメージを受けた！\n", opponentPlayer, damage);
+            opponentPlayer.hitPoint = opponentPlayer.hitPoint - damage;
         }
     }
 
-    public void printCard(String name) {
-        System.out.print(name);
+    public void printCard() {
+        System.out.print("[" + this.name + "]");
         for (int i = 0; i < this.deck.length; i++) {
             int monsterIndex = this.deck[i];
             System.out.printf("%s ", this.monsters.get(monsterIndex).name);
