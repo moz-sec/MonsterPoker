@@ -36,7 +36,6 @@ public class MonsterPoker {
         // PlayerのDraw
         player.draw(scanner);
 
-
         // CPUのDraw
         cpu.draw();
     }

@@ -63,13 +63,12 @@ public class Player {
 
     public void judgeYaku() throws InterruptedException {
         // 役判定用配列の初期化
-        for (int i = 0; i < this.yaku.length; i++) {
-            this.yaku[i] = 0;
-        }
+        IntStream.range(0, this.yaku.length).forEach(i -> this.yaku[i] = 0);
+        IntStream.range(0, this.deck.length).forEach(i -> this.yaku[this.deck[i]]++);
         // モンスターカードが何が何枚あるかをcpuYaku配列に登録
-        for (int i = 0; i < this.deck.length; i++) {
-            this.yaku[this.deck[i]]++;
-        }
+        // for (int i = 0; i < this.deck.length; i++) {
+        // this.yaku[this.deck[i]]++;
+        // }
         // 役判定
         // 5が1つある：ファイブ
         // 4が1つある：フォー
@@ -85,7 +84,7 @@ public class Player {
         pair = 0; // pair数を保持する
         one = 0;// 1枚だけのカードの枚数
         // 手札ごとのcpuYaku配列の作成
-        for (int i = 0; i < this.yaku.length; i++) {
+        IntStream.range(0, this.yaku.length).forEach(i -> {
             if (yaku[i] == 1) {
                 one++;
             } else if (yaku[i] == 2) {
@@ -97,7 +96,20 @@ public class Player {
             } else if (yaku[i] == 5) {
                 five = true;
             }
-        }
+        });
+        // for (int i = 0; i < this.yaku.length; i++) {
+        // if (yaku[i] == 1) {
+        // one++;
+        // } else if (yaku[i] == 2) {
+        // pair++;
+        // } else if (yaku[i] == 3) {
+        // three = true;
+        // } else if (yaku[i] == 4) {
+        // four = true;
+        // } else if (yaku[i] == 5) {
+        // five = true;
+        // }
+        // }
 
         this.AttackPointRate = 1;// 初期化
         this.DefencePointRate = 1;
