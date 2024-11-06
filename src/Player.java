@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -5,9 +7,7 @@ import java.util.Scanner;
  * Player
  */
 public class Player {
-    String monsters[] = {"スライム", "サハギン", "ドラゴン", "デュラハン", "シーサーペント"};
-    int monsterAp[] = {10, 20, 30, 25, 30};
-    int monsterDp[] = {40, 20, 25, 15, 20};
+    public List<Monster> monsters = new ArrayList<>();
     String changeCard = new String();
     boolean five = false;
     boolean four = false;
@@ -25,6 +25,14 @@ public class Player {
     double DefencePointRate = 1;
     double AttackPoint = 0;
     double DefencePoint = 0;
+
+    public Player() {
+        monsters.add(new Monster("スライム", 10, 40));
+        monsters.add(new Monster("サハギン", 20, 20));
+        monsters.add(new Monster("ドラゴン", 30, 25));
+        monsters.add(new Monster("デュラハン", 25, 15));
+        monsters.add(new Monster("シーサーペント", 30, 20));
+    }
 
     public void draw(Scanner scanner) throws InterruptedException {
         System.out.println("PlayerのDraw！");
@@ -128,8 +136,8 @@ public class Player {
         // APとDPの計算
         for (int i = 0; i < this.yaku.length; i++) {
             if (this.yaku[i] >= 1) {
-                this.AttackPoint = this.AttackPoint + this.monsterAp[i] * this.yaku[i];
-                this.DefencePoint = this.DefencePoint + this.monsterDp[i] * this.yaku[i];
+                this.AttackPoint = this.AttackPoint + monsters.get(i).ap * this.yaku[i];
+                this.DefencePoint = this.DefencePoint + monsters.get(i).dp * this.yaku[i];
             }
         }
         this.AttackPoint = this.AttackPoint * this.AttackPointRate;
@@ -141,7 +149,7 @@ public class Player {
         System.out.print("PlayerのDrawした");
         for (int i = 0; i < this.yaku.length; i++) {
             if (this.yaku[i] >= 1) {
-                System.out.print(this.monsters[i] + " ");
+                System.out.print(this.monsters.get(i).name + " ");
                 Thread.sleep(500);
             }
         }
@@ -160,7 +168,8 @@ public class Player {
     public void printCard(String name) {
         System.out.print(name);
         for (int i = 0; i < this.deck.length; i++) {
-            System.out.printf("%s ", this.monsters[this.deck[i]]);
+            int monsterIndex = this.deck[i];
+            System.out.printf("%s ", this.monsters.get(monsterIndex).name);
         }
         System.out.println();
     }

@@ -4,6 +4,10 @@
 public class Cpu extends Player {
     public int exchangeCards[] = new int[5];
 
+    public Cpu() {
+        super();
+    }
+
     public void draw() throws InterruptedException {
         System.out.println("CPUのDraw！");
         for (int i = 0; i < this.deck.length; i++) {
@@ -83,7 +87,7 @@ public class Cpu extends Player {
         System.out.print("CPUのDrawした");
         for (int i = 0; i < this.yaku.length; i++) {
             if (this.yaku[i] >= 1) {
-                System.out.print(this.monsters[i] + " ");
+                System.out.print(this.monsters.get(i).name + " ");
                 Thread.sleep(500);
             }
         }
