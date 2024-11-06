@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.stream.*;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -38,27 +39,23 @@ public class Player {
 
     public void draw(Scanner scanner) throws InterruptedException {
         System.out.println("PlayerのDraw！");
-        for (int i = 0; i < this.deck.length; i++) {
-            this.deck[i] = card.nextInt(5);
-        }
+        IntStream.range(0, this.deck.length).forEach(i -> deck[i] = card.nextInt(5));
         this.printCard();
 
         // カードの交換
         System.out.println("カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
-        String exchange = scanner.nextLine();
-        if (exchange.charAt(0) != '0') {
-            for (int i = 0; i < exchange.length(); i++) {
-                this.deck[Character.getNumericValue(exchange.charAt(i)) - 1] = card.nextInt(5);
-            }
+        String firstExchange = scanner.nextLine();
+        if (firstExchange.charAt(0) != '0') {
+            IntStream.range(0, firstExchange.length())
+                    .forEach(i -> deck[Character.getNumericValue(firstExchange.charAt(i)) - 1] = card.nextInt(5));
             this.printCard();
 
             System.out
                     .println("もう一度カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
-            exchange = scanner.nextLine();
-            if (exchange.charAt(0) != '0') {
-                for (int i = 0; i < exchange.length(); i++) {
-                    this.deck[Character.getNumericValue(exchange.charAt(i)) - 1] = card.nextInt(5);
-                }
+            String secondExchange = scanner.nextLine();
+            if (secondExchange.charAt(0) != '0') {
+                IntStream.range(0, secondExchange.length())
+                        .forEach(i -> deck[Character.getNumericValue(secondExchange.charAt(i)) - 1] = card.nextInt(5));
                 this.printCard();
             }
         }
@@ -139,24 +136,23 @@ public class Player {
     }
 
     private void calculatePoint() {
-        for (int i = 0; i < this.yaku.length; i++) {
-            if (this.yaku[i] >= 1) {
-                this.AttackPoint += monsters.get(i).ap * this.yaku[i];
-                this.DefencePoint += monsters.get(i).dp * this.yaku[i];
-            }
-        }
+        IntStream.range(0, this.yaku.length).filter(i -> this.yaku[i] >= 1).forEach(i -> {
+            this.AttackPoint += monsters.get(i).ap * this.yaku[i];
+            this.DefencePoint += monsters.get(i).dp * this.yaku[i];
+        });
         this.AttackPoint = this.AttackPoint * this.AttackPointRate;
         this.DefencePoint = this.DefencePoint * this.DefencePointRate;
     }
 
     public void attack(Player opponentPlayer) throws InterruptedException {
         System.out.printf("%sのDrawした", this.name);
-        for (int i = 0; i < this.yaku.length; i++) {
-            if (this.yaku[i] >= 1) {
-                System.out.print(this.monsters.get(i).name + " ");
+        IntStream.range(0, this.yaku.length).filter(i -> this.yaku[i] >= 1).forEach(i -> {
+            System.out.print(this.monsters.get(i).name + " ");
+            try {
                 Thread.sleep(500);
+            } catch (InterruptedException e) {
             }
-        }
+        });
         System.out.print("の攻撃！");
         Thread.sleep(1000);
         System.out.printf("%sのモンスターによるガード！\n", opponentPlayer.name);
@@ -171,10 +167,10 @@ public class Player {
 
     public void printCard() {
         System.out.print("[" + this.name + "]");
-        for (int i = 0; i < this.deck.length; i++) {
+        IntStream.range(0, this.deck.length).forEach(i -> {
             int monsterIndex = this.deck[i];
             System.out.printf("%s ", this.monsters.get(monsterIndex).name);
-        }
+        });
         System.out.println();
     }
 }
