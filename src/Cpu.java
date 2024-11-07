@@ -1,18 +1,25 @@
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.IntStream;
+import java.util.HashMap;
 
 /**
  * Cpu
  */
 public class Cpu extends Player {
-    public int exchangeCards[] = new int[5];
+    String changeCard = new String();
+    int exchangeCards[] = new int[5];
 
     public Cpu(String name) {
         super(name);
     }
 
-    public void draw() throws InterruptedException {
+    public void draw(List<Monster> cards) throws InterruptedException {
         System.out.println("CPUのDraw！");
-        IntStream.range(0, this.deck.length).forEach(i -> this.deck[i] = card.nextInt(5));
+        Random random = new Random();
+        IntStream.range(0, this.deck.length)
+                .forEach(i -> this.deck[i] = cards.get(random.nextInt(cards.size())));
         this.printCard();
 
         // 交換するカードの決定
@@ -21,8 +28,8 @@ public class Cpu extends Player {
         // 交換するカード番号の表示
         this.printExchangeCardNumber();
 
-        // // カードの交換
-        this.exchangeCard();
+        // カードの交換
+        this.exchangeCard(cards);
 
         // 交換するカードの決定
         this.decideExchangeCard();
@@ -31,7 +38,47 @@ public class Cpu extends Player {
         this.printExchangeCardNumber();
 
         // カードの交換
-        this.exchangeCard();
+        this.exchangeCard(cards);
+    }
+
+    private void exchangeCard(List<Monster> cards) {
+        if (this.changeCard.charAt(0) != '0') {
+            Random random = new Random();
+            for (int i = 0; i < this.changeCard.length(); i++) {
+                this.deck[Character.getNumericValue(this.changeCard.charAt(i)) - 1] =
+                        cards.get(random.nextInt(cards.size()));
+            }
+            this.printCard();
+        }
+    }
+
+    private void decideExchangeCard() throws InterruptedException {
+        System.out.println("CPUが交換するカードを考えています・・・・・・");
+        Thread.sleep(2000);
+
+        // カードとそれぞれの枚数
+        // 例) スライム:2, サハギン:1, ドラゴン:2
+        Map<Monster, Integer> cardCount = new HashMap<>();
+
+        for (Monster card : this.deck) {
+            cardCount.put(card, cardCount.getOrDefault(card, 0) + 1);
+        }
+
+        Random random = new Random();
+
+        // deckを走査して，重複するカード以外のカードをランダムに交換する
+        // 0,1,0,2,3 といったdeckの場合，2枚目，4枚目，5枚目のカードをそれぞれ交換するかどうか決定し，例えば24といった形で決定する
+        // 何番目のカードを交換するかを0,1で持つ配列の初期化
+        // 例えばexchangeCards[]が{0,1,1,0,0}の場合は2,3枚目を交換の候補にする
+        for (int i = 0; i < this.deck.length; i++) {
+            // 重複があれば交換候補から除外する
+            if (cardCount.get(this.deck[i]) > 1) {
+                this.exchangeCards[i] = 0; // 交換しない
+            } else {
+                // 重複がない場合、1/2の確率で交換する
+                this.exchangeCards[i] = random.nextInt(2);
+            }
+        }
     }
 
     private void printExchangeCardNumber() {
@@ -42,48 +89,5 @@ public class Cpu extends Player {
             this.changeCard = "0";
         }
         System.out.println(this.changeCard);
-    }
-
-    private void exchangeCard() {
-        if (this.changeCard.charAt(0) != '0') {
-            IntStream.range(0, this.changeCard.length()).forEach(
-                    i -> this.deck[Character.getNumericValue(this.changeCard.charAt(i)) - 1] = this.card.nextInt(5));
-            this.printCard();
-        }
-    }
-
-    private void decideExchangeCard() throws InterruptedException {
-        System.out.println("CPUが交換するカードを考えています・・・・・・");
-        Thread.sleep(2000);
-        // cpuDeckを走査して，重複するカード以外のカードをランダムに交換する
-        // 0,1,0,2,3 といったcpuDeckの場合，2枚目，4枚目，5枚目のカードをそれぞれ交換するかどうか決定し，例えば24といった形で決定する
-        // 何番目のカードを交換するかを0,1で持つ配列の初期化
-        // 例えばexchangeCards[]が{0,1,1,0,0}の場合は2,3枚目を交換の候補にする
-        IntStream.range(0, this.exchangeCards.length).forEach(i -> this.exchangeCards[i] = -1);
-        IntStream.range(0, this.deck.length).filter(i -> this.exchangeCards[i] == -1).forEach(i -> {
-            IntStream.range(i + 1, this.deck.length).filter(j -> this.deck[i] == this.deck[j]).forEach(j -> {
-                this.exchangeCards[i] = 0;
-                this.exchangeCards[j] = 0;
-            });
-            if (this.exchangeCards[i] != 0) {
-                this.exchangeCards[i] = this.card.nextInt(2);// 交換するかどうかをランダムに最終決定する
-                // this.exchangeCards[i] = 1;
-            }
-        });// 本当にstreamにする意味ある？
-
-        // for (int i = 0; i < this.deck.length; i++) {
-        // if (this.exchangeCards[i] == -1) {
-        // for (int j = i + 1; j < this.deck.length; j++) {
-        // if (this.deck[i] == this.deck[j]) {
-        // this.exchangeCards[i] = 0;
-        // this.exchangeCards[j] = 0;
-        // }
-        // }
-        // if (this.exchangeCards[i] != 0) {
-        // this.exchangeCards[i] = this.card.nextInt(2);// 交換するかどうかをランダムに最終決定する
-        // // this.exchangeCards[i] = 1;
-        // }
-        // }
-        // }
     }
 }

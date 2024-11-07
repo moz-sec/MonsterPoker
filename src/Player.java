@@ -1,6 +1,7 @@
-import java.util.ArrayList;
-import java.util.stream.*;
+import java.util.stream.IntStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -9,66 +10,62 @@ import java.util.Scanner;
  */
 public class Player {
     String name = new String();
-    public List<Monster> monsters = new ArrayList<>();
-    String changeCard = new String();
-    boolean five = false;
-    boolean four = false;
-    boolean three = false;
-    int pair = 0;
-    int one = 0;
+    Monster[] deck = new Monster[5];
 
-    Random card = new Random();
+    // 手札のカードとそれぞれの枚数
+    // 例) スライム:2, サハギン:1, ドラゴン:2
+    Map<Monster, Integer> handMap = new HashMap<>();
 
-    double hitPoint = 1000;
-    int yaku[] = new int[5];
-    int deck[] = new int[5];
-
-    double AttackPointRate = 1;
-    double DefencePointRate = 1;
-    double AttackPoint = 0;
-    double DefencePoint = 0;
+    double hitPoint;
+    double attackPoint;
+    double defensePoint;
 
     public Player(String name) {
         this.name = name;
-        monsters.add(new Monster("スライム", 10, 40));
-        monsters.add(new Monster("サハギン", 20, 20));
-        monsters.add(new Monster("ドラゴン", 30, 25));
-        monsters.add(new Monster("デュラハン", 25, 15));
-        monsters.add(new Monster("シーサーペント", 30, 20));
+        this.hitPoint = 1000;
     }
 
-    public void draw(Scanner scanner) throws InterruptedException {
+    public void draw(Scanner scanner, List<Monster> cards) throws InterruptedException {
+        Random random = new Random();
         System.out.println("PlayerのDraw！");
-        IntStream.range(0, this.deck.length).forEach(i -> deck[i] = card.nextInt(5));
+        IntStream.range(0, this.deck.length)
+                .forEach(i -> deck[i] = cards.get(random.nextInt(cards.size())));
         this.printCard();
 
         // カードの交換
         System.out.println("カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
         String firstExchange = scanner.nextLine();
         if (firstExchange.charAt(0) != '0') {
-            IntStream.range(0, firstExchange.length())
-                    .forEach(i -> deck[Character.getNumericValue(firstExchange.charAt(i)) - 1] = card.nextInt(5));
+            IntStream.range(0, firstExchange.length()).forEach(
+                    i -> this.deck[Character.getNumericValue(firstExchange.charAt(i)) - 1] =
+                            cards.get(random.nextInt(cards.size())));
             this.printCard();
 
             System.out
                     .println("もう一度カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
             String secondExchange = scanner.nextLine();
             if (secondExchange.charAt(0) != '0') {
-                IntStream.range(0, secondExchange.length())
-                        .forEach(i -> deck[Character.getNumericValue(secondExchange.charAt(i)) - 1] = card.nextInt(5));
+                IntStream.range(0, secondExchange.length()).forEach(
+                        i -> this.deck[Character.getNumericValue(secondExchange.charAt(i)) - 1] =
+                                cards.get(random.nextInt(cards.size())));
                 this.printCard();
             }
         }
     }
 
-    public void judgeYaku() throws InterruptedException {
-        // 役判定用配列の初期化
-        IntStream.range(0, this.yaku.length).forEach(i -> this.yaku[i] = 0);
-        IntStream.range(0, this.deck.length).forEach(i -> this.yaku[this.deck[i]]++);
-        // モンスターカードが何が何枚あるかをcpuYaku配列に登録
-        // for (int i = 0; i < this.deck.length; i++) {
-        // this.yaku[this.deck[i]]++;
+    public void judgeCardHand() throws InterruptedException {
+        this.handMap.clear();
+
+        for (Monster card : deck) {
+            handMap.merge(card, 1, Integer::sum);
+        }
+
+        // System.out.printf("-------------------- %s\n", this.name);
+        // for (Map.Entry<Monster, Integer> entry : handMap.entrySet()) {
+        // System.out.println(entry.getKey().name + " : " + entry.getValue() + "枚");
         // }
+        // System.out.println("--------------------");
+
         // 役判定
         // 5が1つある：ファイブ
         // 4が1つある：フォー
@@ -78,101 +75,89 @@ public class Player {
         // 2が1つある：ペア
         // 1が5つある：スペシャルファイブ
         // 初期化
-        five = false;
-        four = false;
-        three = false;
-        pair = 0; // pair数を保持する
-        one = 0;// 1枚だけのカードの枚数
-        // 手札ごとのcpuYaku配列の作成
-        IntStream.range(0, this.yaku.length).forEach(i -> {
-            if (yaku[i] == 1) {
-                one++;
-            } else if (yaku[i] == 2) {
-                pair++;
-            } else if (yaku[i] == 3) {
-                three = true;
-            } else if (yaku[i] == 4) {
-                four = true;
-            } else if (yaku[i] == 5) {
-                five = true;
-            }
-        });
-        // for (int i = 0; i < this.yaku.length; i++) {
-        // if (yaku[i] == 1) {
-        // one++;
-        // } else if (yaku[i] == 2) {
-        // pair++;
-        // } else if (yaku[i] == 3) {
-        // three = true;
-        // } else if (yaku[i] == 4) {
-        // four = true;
-        // } else if (yaku[i] == 5) {
-        // five = true;
-        // }
-        // }
 
-        this.AttackPointRate = 1;// 初期化
-        this.DefencePointRate = 1;
-        if (one == 5) {
+        boolean fiveOfKind = false;
+        boolean fourOfKind = false;
+        boolean threeOfKind = false;
+        int pairs = 0; // pair数を保持
+
+        for (int count : handMap.values()) {
+            switch (count) {
+                case 2 -> pairs++;
+                case 3 -> threeOfKind = true;
+                case 4 -> fourOfKind = true;
+                case 5 -> fiveOfKind = true;
+            }
+        }
+
+        double attackPointRate;
+        double defensePointRate;
+        if (handMap.size() == 5) {
             System.out.println("スペシャルファイブ！AP/DPは両方10倍！");
-            this.AttackPointRate = 10;
-            this.DefencePointRate = 10;
-        } else if (five == true) {
+            attackPointRate = 10;
+            defensePointRate = 10;
+        } else if (fiveOfKind) {
             System.out.println("ファイブ！AP/DPは両方5倍！");
-            this.AttackPointRate = 5;
-            this.DefencePointRate = 5;
-        } else if (four == true) {
+            attackPointRate = 5;
+            defensePointRate = 5;
+        } else if (fourOfKind) {
             System.out.println("フォー！AP/DPは両方4倍！");
-            this.AttackPointRate = 3;
-            this.DefencePointRate = 3;
-        } else if (three == true && pair == 1) {
+            attackPointRate = 4;
+            defensePointRate = 4;
+        } else if (threeOfKind && pairs == 1) {
             System.out.println("フルハウス！AP/DPは両方3倍");
-            this.AttackPointRate = 3;
-            this.DefencePointRate = 3;
-        } else if (three == true) {
+            attackPointRate = 3;
+            defensePointRate = 3;
+        } else if (threeOfKind) {
             System.out.println("スリーカード！AP/DPはそれぞれ3倍と2倍");
-            this.DefencePointRate = 2;
-            this.AttackPointRate = 3;
-        } else if (pair == 2) {
+            attackPointRate = 3;
+            defensePointRate = 2;
+        } else if (pairs == 2) {
             System.out.println("ツーペア！AP/DPは両方2倍");
-            this.AttackPointRate = 2;
-            this.DefencePointRate = 2;
-        } else if (pair == 1) {
+            attackPointRate = 2;
+            defensePointRate = 2;
+        } else if (pairs == 1) {
             System.out.println("ワンペア！AP/DPは両方1/2倍");
-            this.AttackPointRate = 0.5;
-            this.DefencePointRate = 0.5;
+            attackPointRate = 0.5;
+            defensePointRate = 0.5;
+        } else {
+            attackPointRate = 1;
+            defensePointRate = 1;
         }
         Thread.sleep(1000);
 
-        calculatePoint();
+        calculatePoint(attackPointRate, defensePointRate);
     }
 
-    private void calculatePoint() {
-        IntStream.range(0, this.yaku.length).filter(i -> this.yaku[i] >= 1).forEach(i -> {
-            this.AttackPoint += monsters.get(i).ap * this.yaku[i];
-            this.DefencePoint += monsters.get(i).dp * this.yaku[i];
-        });
-        this.AttackPoint = this.AttackPoint * this.AttackPointRate;
-        this.DefencePoint = this.DefencePoint * this.DefencePointRate;
+    public void calculatePoint(double attackPointRate, double defensePointRate) {
+        this.attackPoint = 0;
+        this.defensePoint = 0;
+
+        for (Map.Entry<Monster, Integer> entry : handMap.entrySet()) {
+            Monster monster = entry.getKey();
+            int count = entry.getValue();
+
+            this.attackPoint += monster.ap * count;
+            this.defensePoint += monster.dp * count;
+        }
+        this.attackPoint *= attackPointRate;
+        this.defensePoint *= defensePointRate;
     }
 
     public void attack(Player opponentPlayer) throws InterruptedException {
         System.out.printf("%sのDrawした", this.name);
-        IntStream.range(0, this.yaku.length).filter(i -> this.yaku[i] >= 1).forEach(i -> {
-            System.out.print(this.monsters.get(i).name + " ");
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-            }
-        });
+        for (Map.Entry<Monster, Integer> entry : this.handMap.entrySet()) {
+            System.out.print(entry.getKey().name + " ");
+            Thread.sleep(500);
+        }
         System.out.print("の攻撃！");
         Thread.sleep(1000);
         System.out.printf("%sのモンスターによるガード！\n", opponentPlayer.name);
-        if (opponentPlayer.DefencePoint >= this.AttackPoint) {
+        if (opponentPlayer.defensePoint >= this.attackPoint) {
             System.out.printf("%sはノーダメージ！\n", opponentPlayer.name);
         } else {
-            double damage = this.AttackPoint - opponentPlayer.DefencePoint;
-            System.out.printf("%sは%.0fのダメージを受けた！\n", opponentPlayer, damage);
+            double damage = this.attackPoint - opponentPlayer.defensePoint;
+            System.out.printf("%sは%.0fのダメージを受けた！\n", opponentPlayer.name, damage);
             opponentPlayer.hitPoint = opponentPlayer.hitPoint - damage;
         }
     }
@@ -180,8 +165,7 @@ public class Player {
     public void printCard() {
         System.out.print("[" + this.name + "]");
         IntStream.range(0, this.deck.length).forEach(i -> {
-            int monsterIndex = this.deck[i];
-            System.out.printf("%s ", this.monsters.get(monsterIndex).name);
+            System.out.printf("%s ", this.deck[i].name);
         });
         System.out.println();
     }
