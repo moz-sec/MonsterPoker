@@ -9,8 +9,10 @@ import java.util.Scanner;
  * Player
  */
 public class Player {
-    String name = new String();
+    String name;
     Monster[] deck = new Monster[5];
+    Random random;
+    Scanner scanner;
 
     // 手札のカードとそれぞれの枚数
     // 例) スライム:2, サハギン:1, ドラゴン:2
@@ -20,36 +22,44 @@ public class Player {
     double attackPoint;
     double defensePoint;
 
-    public Player(String name) {
+    public Player(String name, Scanner scanner) {
         this.name = name;
         this.hitPoint = 1000;
+        this.random = new Random();
+        this.scanner = scanner;
     }
 
-    public void draw(Scanner scanner, List<Monster> cards) throws InterruptedException {
-        Random random = new Random();
+    public void draw(List<Monster> cards) throws InterruptedException {
         System.out.println("PlayerのDraw！");
         IntStream.range(0, this.deck.length)
-                .forEach(i -> deck[i] = cards.get(random.nextInt(cards.size())));
+                .forEach(i -> deck[i] = cards.get(this.random.nextInt(cards.size())));
         this.printCard();
 
-        // カードの交換
-        System.out.println("カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
-        String firstExchange = scanner.nextLine();
-        if (firstExchange.charAt(0) != '0') {
-            IntStream.range(0, firstExchange.length()).forEach(
-                    i -> this.deck[Character.getNumericValue(firstExchange.charAt(i)) - 1] =
-                            cards.get(random.nextInt(cards.size())));
-            this.printCard();
+        this.promptCardExchange(cards);
+    }
 
-            System.out
-                    .println("もう一度カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
-            String secondExchange = scanner.nextLine();
-            if (secondExchange.charAt(0) != '0') {
-                IntStream.range(0, secondExchange.length()).forEach(
-                        i -> this.deck[Character.getNumericValue(secondExchange.charAt(i)) - 1] =
-                                cards.get(random.nextInt(cards.size())));
-                this.printCard();
+    public void promptCardExchange(List<Monster> cards) {
+        for (int i = 0; i < 2; i++) {
+            System.out.println(
+                    i == 0 ? "カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください"
+                            : "もう一度カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
+            String exchangePositions = this.scanner.nextLine();
+
+            if (exchangePositions.charAt(0) == '0') {
+                break;
             }
+
+            this.exchangeCards(exchangePositions, cards);
+        }
+    }
+
+    public void exchangeCards(String exchangePositions, List<Monster> cards) {
+        if (exchangePositions.charAt(0) != '0') {
+            IntStream.range(0, exchangePositions.length()).forEach(
+                    i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] =
+                            cards.get(this.random.nextInt(cards.size())));
+
+            this.printCard();
         }
     }
 

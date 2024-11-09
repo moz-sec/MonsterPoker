@@ -10,8 +10,9 @@ public class MonsterPoker {
     List<Monster> cards;
 
     public MonsterPoker() {
-        this.player = new Player("Player");
-        this.cpu = new Cpu("CPU");
+        Scanner scanner = new Scanner(System.in);
+        this.player = new Player("Player", scanner);
+        this.cpu = new Cpu("CPU", scanner);
 
         this.cards = new java.util.ArrayList<>();
         cards.add(new Monster("スライム", 10, 40));
@@ -24,7 +25,7 @@ public class MonsterPoker {
     public void run() throws InterruptedException {
         Scanner scanner = new Scanner(System.in);// 標準入力
         while (true) {
-            drawPhase(scanner);
+            drawPhase();
             battlePhase();
             if (player.hitPoint <= 0 && cpu.hitPoint <= 0) {
                 System.out.println("引き分け！");
@@ -46,8 +47,8 @@ public class MonsterPoker {
      *
      * @throws InterruptedException
      */
-    public void drawPhase(Scanner scanner) throws InterruptedException {
-        player.draw(scanner, cards);
+    public void drawPhase() throws InterruptedException {
+        player.draw(cards);
         cpu.draw(cards);
     }
 

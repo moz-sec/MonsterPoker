@@ -3,6 +3,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * Cpu
@@ -11,8 +12,8 @@ public class Cpu extends Player {
     String changeCard = new String();
     int exchangeCards[] = new int[5];
 
-    public Cpu(String name) {
-        super(name);
+    public Cpu(String name, Scanner scanner) {
+        super(name, scanner);
     }
 
     public void draw(List<Monster> cards) throws InterruptedException {
