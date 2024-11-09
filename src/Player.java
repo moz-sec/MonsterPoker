@@ -9,8 +9,10 @@ import java.util.Scanner;
  * Player
  */
 public class Player {
-    String name = new String();
+    String name;
     Monster[] deck = new Monster[5];
+    Random random;
+    Scanner scanner;
 
     // 手札のカードとそれぞれの枚数
     // 例) スライム:2, サハギン:1, ドラゴン:2
@@ -20,37 +22,43 @@ public class Player {
     double attackPoint;
     double defensePoint;
 
-    public Player(String name) {
+    public Player(String name, Scanner scanner) {
         this.name = name;
         this.hitPoint = 1000;
+        this.random = new Random();
+        this.scanner = scanner;
     }
 
-    public void draw(Scanner scanner, List<Monster> cards) throws InterruptedException {
-        Random random = new Random();
+    public void draw(List<Monster> cards) throws InterruptedException {
         System.out.println("PlayerのDraw！");
         IntStream.range(0, this.deck.length)
-                .forEach(i -> deck[i] = cards.get(random.nextInt(cards.size())));
+                .forEach(i -> deck[i] = cards.get(this.random.nextInt(cards.size())));
         this.printCard();
 
-        // カードの交換
-        System.out.println("カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
-        String firstExchange = scanner.nextLine();
-        if (firstExchange.charAt(0) != '0') {
-            IntStream.range(0, firstExchange.length()).forEach(
-                    i -> this.deck[Character.getNumericValue(firstExchange.charAt(i)) - 1] =
-                            cards.get(random.nextInt(cards.size())));
-            this.printCard();
+        this.promptCardExchange(cards);
+    }
 
-            System.out
-                    .println("もう一度カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
-            String secondExchange = scanner.nextLine();
-            if (secondExchange.charAt(0) != '0') {
-                IntStream.range(0, secondExchange.length()).forEach(
-                        i -> this.deck[Character.getNumericValue(secondExchange.charAt(i)) - 1] =
-                                cards.get(random.nextInt(cards.size())));
-                this.printCard();
+    public void promptCardExchange(List<Monster> cards) {
+        for (int i = 0; i < 2; i++) {
+            System.out.println(
+                    i == 0 ? "カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください"
+                            : "もう一度カードを交換する場合は1から5の数字（左から数えた位置を表す）を続けて入力してください．交換しない場合は0と入力してください");
+            String exchangePositions = this.scanner.nextLine();
+
+            if (exchangePositions.charAt(0) == '0') {
+                break;
             }
+
+            this.exchangeCards(exchangePositions, cards);
         }
+    }
+
+    public void exchangeCards(String exchangePositions, List<Monster> cards) {
+        IntStream.range(0, exchangePositions.length()).forEach(
+                i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] =
+                        cards.get(this.random.nextInt(cards.size())));
+
+        this.printCard();
     }
 
     public void judgeCardHand() throws InterruptedException {
@@ -90,46 +98,35 @@ public class Player {
             }
         }
 
-        double attackPointRate;
-        double defensePointRate;
+        HandRank handRank = null;
         if (handMap.size() == 5) {
             System.out.println("スペシャルファイブ！AP/DPは両方10倍！");
-            attackPointRate = 10;
-            defensePointRate = 10;
+            handRank = HandRank.SPECIAL_FIVE;
         } else if (fiveOfKind) {
             System.out.println("ファイブ！AP/DPは両方5倍！");
-            attackPointRate = 5;
-            defensePointRate = 5;
+            handRank = HandRank.FIVE_OF_KIND;
         } else if (fourOfKind) {
             System.out.println("フォー！AP/DPは両方4倍！");
-            attackPointRate = 4;
-            defensePointRate = 4;
+            handRank = HandRank.FOUR_OF_KIND;
         } else if (threeOfKind && pairs == 1) {
             System.out.println("フルハウス！AP/DPは両方3倍");
-            attackPointRate = 3;
-            defensePointRate = 3;
+            handRank = HandRank.FULL_HOUSE;
         } else if (threeOfKind) {
             System.out.println("スリーカード！AP/DPはそれぞれ3倍と2倍");
-            attackPointRate = 3;
-            defensePointRate = 2;
+            handRank = HandRank.THREE_OF_KIND;
         } else if (pairs == 2) {
             System.out.println("ツーペア！AP/DPは両方2倍");
-            attackPointRate = 2;
-            defensePointRate = 2;
+            handRank = HandRank.TWO_PAIR;
         } else if (pairs == 1) {
             System.out.println("ワンペア！AP/DPは両方1/2倍");
-            attackPointRate = 0.5;
-            defensePointRate = 0.5;
-        } else {
-            attackPointRate = 1;
-            defensePointRate = 1;
+            handRank = HandRank.ONE_PAIR;
         }
         Thread.sleep(1000);
 
-        calculatePoint(attackPointRate, defensePointRate);
+        calculatePoint(handRank);
     }
 
-    public void calculatePoint(double attackPointRate, double defensePointRate) {
+    public void calculatePoint(HandRank handRank) {
         this.attackPoint = 0;
         this.defensePoint = 0;
 
@@ -140,8 +137,8 @@ public class Player {
             this.attackPoint += monster.ap * count;
             this.defensePoint += monster.dp * count;
         }
-        this.attackPoint *= attackPointRate;
-        this.defensePoint *= defensePointRate;
+        this.attackPoint *= handRank.getAttackMultiplier();
+        this.defensePoint *= handRank.getDefenseMultiplier();
     }
 
     public void attack(Player opponentPlayer) throws InterruptedException {
