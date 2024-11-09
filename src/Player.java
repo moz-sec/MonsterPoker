@@ -54,13 +54,11 @@ public class Player {
     }
 
     public void exchangeCards(String exchangePositions, List<Monster> cards) {
-        if (exchangePositions.charAt(0) != '0') {
-            IntStream.range(0, exchangePositions.length()).forEach(
-                    i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] =
-                            cards.get(this.random.nextInt(cards.size())));
+        IntStream.range(0, exchangePositions.length()).forEach(
+                i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] =
+                        cards.get(this.random.nextInt(cards.size())));
 
-            this.printCard();
-        }
+        this.printCard();
     }
 
     public void judgeCardHand() throws InterruptedException {
@@ -100,46 +98,35 @@ public class Player {
             }
         }
 
-        double attackPointRate;
-        double defensePointRate;
+        HandRank handRank = null;
         if (handMap.size() == 5) {
             System.out.println("スペシャルファイブ！AP/DPは両方10倍！");
-            attackPointRate = 10;
-            defensePointRate = 10;
+            handRank = HandRank.SPECIAL_FIVE;
         } else if (fiveOfKind) {
             System.out.println("ファイブ！AP/DPは両方5倍！");
-            attackPointRate = 5;
-            defensePointRate = 5;
+            handRank = HandRank.FIVE_OF_KIND;
         } else if (fourOfKind) {
             System.out.println("フォー！AP/DPは両方4倍！");
-            attackPointRate = 4;
-            defensePointRate = 4;
+            handRank = HandRank.FOUR_OF_KIND;
         } else if (threeOfKind && pairs == 1) {
             System.out.println("フルハウス！AP/DPは両方3倍");
-            attackPointRate = 3;
-            defensePointRate = 3;
+            handRank = HandRank.FULL_HOUSE;
         } else if (threeOfKind) {
             System.out.println("スリーカード！AP/DPはそれぞれ3倍と2倍");
-            attackPointRate = 3;
-            defensePointRate = 2;
+            handRank = HandRank.THREE_OF_KIND;
         } else if (pairs == 2) {
             System.out.println("ツーペア！AP/DPは両方2倍");
-            attackPointRate = 2;
-            defensePointRate = 2;
+            handRank = HandRank.TWO_PAIR;
         } else if (pairs == 1) {
             System.out.println("ワンペア！AP/DPは両方1/2倍");
-            attackPointRate = 0.5;
-            defensePointRate = 0.5;
-        } else {
-            attackPointRate = 1;
-            defensePointRate = 1;
+            handRank = HandRank.ONE_PAIR;
         }
         Thread.sleep(1000);
 
-        calculatePoint(attackPointRate, defensePointRate);
+        calculatePoint(handRank);
     }
 
-    public void calculatePoint(double attackPointRate, double defensePointRate) {
+    public void calculatePoint(HandRank handRank) {
         this.attackPoint = 0;
         this.defensePoint = 0;
 
@@ -150,8 +137,8 @@ public class Player {
             this.attackPoint += monster.ap * count;
             this.defensePoint += monster.dp * count;
         }
-        this.attackPoint *= attackPointRate;
-        this.defensePoint *= defensePointRate;
+        this.attackPoint *= handRank.getAttackMultiplier();
+        this.defensePoint *= handRank.getDefenseMultiplier();
     }
 
     public void attack(Player opponentPlayer) throws InterruptedException {
