@@ -49,6 +49,7 @@ public class MonsterPoker {
      */
     public void drawPhase() throws InterruptedException {
         player.draw(cards);
+
         cpu.draw(cards);
     }
 
@@ -60,41 +61,27 @@ public class MonsterPoker {
         System.out.println("バトル！！");
         player.attack(cpu);
         cpu.attack(player);
-
         System.out.println("PlayerのHPは" + player.hitPoint);
         System.out.println("CPUのHPは" + cpu.hitPoint);
     }
 }
 
-
 enum HandRank {
-    SPECIAL_FIVE("スペシャルファイブ！", 10,10),
+    SPECIAL_FIVE("スペシャルファイブ！", 10, 10),
     FIVE_OF_KIND("ファイブ！", 5, 5),
-    FOUR_OF_KIND("フォー！", 4,4),
+    FOUR_OF_KIND("フォー！", 4, 4),
     FULL_HOUSE("フルハウス！", 3, 3),
-    THREE_OF_KIND("スリーカード！", 3,2),
+    THREE_OF_KIND("スリーカード！", 3, 2),
     TWO_PAIR("ツーペア！", 2, 2),
     ONE_PAIR("ワンペア！", 0.5, 0.5);
 
-    private final String name;
-    private final double attackMultiplier;
-    private final double defenseMultiplier;
+    String name;
+    double attackMultiplier;
+    double defenseMultiplier;
 
     HandRank(String name, double attackMultiplier, double defenseMultiplier) {
         this.name = name;
         this.attackMultiplier = attackMultiplier;
         this.defenseMultiplier = defenseMultiplier;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public double getAttackMultiplier() {
-        return attackMultiplier;
-    }
-
-    public double getDefenseMultiplier() {
-        return defenseMultiplier;
     }
 }

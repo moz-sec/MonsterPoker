@@ -1,4 +1,5 @@
 import java.util.stream.IntStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,11 @@ public class Player {
     public void draw(List<Monster> cards) throws InterruptedException {
         System.out.println("PlayerのDraw！");
         IntStream.range(0, this.deck.length)
-                .forEach(i -> deck[i] = cards.get(this.random.nextInt(cards.size())));
+                .forEach(i -> {
+                    deck[i] = cards.get(this.random.nextInt(cards.size()));
+                    // テストコード
+                    // deck[i] = cards.get(2);
+                });
         this.printCard();
 
         this.promptCardExchange(cards);
@@ -55,8 +60,8 @@ public class Player {
 
     public void exchangeCards(String exchangePositions, List<Monster> cards) {
         IntStream.range(0, exchangePositions.length()).forEach(
-                i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] =
-                        cards.get(this.random.nextInt(cards.size())));
+                i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] = cards
+                        .get(this.random.nextInt(cards.size())));
 
         this.printCard();
     }
@@ -127,9 +132,6 @@ public class Player {
     }
 
     public void calculatePoint(HandRank handRank) {
-        this.attackPoint = 0;
-        this.defensePoint = 0;
-
         for (Map.Entry<Monster, Integer> entry : handMap.entrySet()) {
             Monster monster = entry.getKey();
             int count = entry.getValue();
@@ -137,8 +139,8 @@ public class Player {
             this.attackPoint += monster.ap * count;
             this.defensePoint += monster.dp * count;
         }
-        this.attackPoint *= handRank.getAttackMultiplier();
-        this.defensePoint *= handRank.getDefenseMultiplier();
+        this.attackPoint *= handRank.attackMultiplier;
+        this.defensePoint *= handRank.defenseMultiplier;
     }
 
     public void attack(Player opponentPlayer) throws InterruptedException {
