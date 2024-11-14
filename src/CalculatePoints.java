@@ -1,18 +1,15 @@
 import java.util.Map;
 
-public class CalcPoints {
+public class CalculatePoints {
     double attackPoint;
     double defensePoint;
 
-    CalcPoints(double attackPoint, double defensePoint) {
+    CalculatePoints(double attackPoint, double defensePoint) {
         this.attackPoint = attackPoint;
         this.defensePoint = defensePoint;
     }
 
-    public void calculatePoint(HandRank handRank, Map<Monster, Integer> handMap) {
-        if (handMap == null) {
-            System.out.println("ぬるぽ");
-        }
+    public void calculatePoint(HandRank handRank, Map<Monster, Integer> handMap) throws InterruptedException{
         for (Map.Entry<Monster, Integer> entry : handMap.entrySet()) {
             Monster monster = entry.getKey();
             int count = entry.getValue();

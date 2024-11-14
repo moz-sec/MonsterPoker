@@ -1,10 +1,11 @@
-import java.util.stream.IntStream;
-import java.util.Arrays;
+import java.util.stream.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Arrays;
+
 
 /*
  * Player
@@ -13,9 +14,9 @@ public class Player {
     String name;
     Monster[] deck = new Monster[5];
     Random random;
-    Scanner scanner;
     HandRank handRank;
-    CalcPoints calcPoints = new CalcPoints(this.attackPoint, this.defensePoint);
+    Scanner scanner;
+    CalculatePoints calcPoints = new CalculatePoints(this.attackPoint, this.defensePoint);
     // 手札のカードとそれぞれの枚数
     // 例) スライム:2, サハギン:1, ドラゴン:2
     Map<Monster, Integer> handMap = new HashMap<>();
@@ -35,8 +36,7 @@ public class Player {
 
     public void draw(List<Monster> cards) throws InterruptedException {
         System.out.println("PlayerのDraw！");
-        IntStream.range(0, this.deck.length)
-                .forEach(i -> {
+        IntStream.range(0, this.deck.length).forEach(i -> {
                     deck[i] = cards.get(this.random.nextInt(cards.size()));
                     // テストコード
                     // deck[i] = cards.get(2);
@@ -63,18 +63,13 @@ public class Player {
 
     public void exchangeCards(String exchangePositions, List<Monster> cards) {
         IntStream.range(0, exchangePositions.length()).forEach(
-                i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] = cards
-                        .get(this.random.nextInt(cards.size())));
-
+                i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] = cards.get(this.random.nextInt(cards.size())));
         this.printCard();
     }
 
     public void handCheck() throws InterruptedException {
         this.handMap.clear();
-
-        for (Monster card : deck) {
-            handMap.merge(card, 1, Integer::sum);
-        }
+        Arrays.stream(deck).forEach(card -> handMap.merge(card, 1, Integer::sum));
 
         boolean fiveOfKind = false;
         boolean fourOfKind = false;
@@ -91,22 +86,22 @@ public class Player {
         }
 
         if (handMap.size() == 5) {
-            System.out.println("スペシャルファイブ！AP/DPは両方10倍！");
+            System.out.println("スペシャルファイブ! AP/DPは両方10倍!");
             handRank = HandRank.SPECIAL_FIVE;
         } else if (fiveOfKind) {
-            System.out.println("ファイブ！AP/DPは両方5倍！");
+            System.out.println("ファイブ! AP/DPは両方5倍!");
             handRank = HandRank.FIVE_OF_KIND;
         } else if (fourOfKind) {
-            System.out.println("フォー！AP/DPは両方4倍！");
+            System.out.println("フォー! AP/DPは両方4倍!");
             handRank = HandRank.FOUR_OF_KIND;
         } else if (threeOfKind && pairs == 1) {
-            System.out.println("フルハウス！AP/DPは両方3倍");
+            System.out.println("フルハウス! AP/DPは両方3倍");
             handRank = HandRank.FULL_HOUSE;
         } else if (threeOfKind) {
-            System.out.println("スリーカード！AP/DPはそれぞれ3倍と2倍");
+            System.out.println("スリーカード! AP/DPはそれぞれ3倍と2倍");
             handRank = HandRank.THREE_OF_KIND;
         } else if (pairs == 2) {
-            System.out.println("ツーペア！AP/DPは両方2倍");
+            System.out.println("ツーペア! AP/DPは両方2倍");
             handRank = HandRank.TWO_PAIR;
         } else if (pairs == 1) {
             System.out.println("ワンペア！AP/DPは両方1/2倍");
@@ -117,14 +112,15 @@ public class Player {
         calcPoints.calculatePoint(handRank, handMap);
         this.attackPoint = calcPoints.attackPoint;
         this.defensePoint = calcPoints.defensePoint;
-        // System.out.println("====================");
-        // System.out.println(this.attackPoint);
-        // System.out.println(this.defensePoint);
-        // System.out.println("====================");
+        System.out.println("====================");
+        System.out.println(this.attackPoint);
+        System.out.println(this.defensePoint);
+        System.out.println("====================");
     }
 
     public void attack(Player opponentPlayer) throws InterruptedException {
         System.out.printf("%sのDrawした", this.name);
+
         for (Map.Entry<Monster, Integer> entry : this.handMap.entrySet()) {
             System.out.print(entry.getKey().name + " ");
             Thread.sleep(500);
@@ -143,9 +139,7 @@ public class Player {
 
     public void printCard() {
         System.out.print("[" + this.name + "]");
-        IntStream.range(0, this.deck.length).forEach(i -> {
-            System.out.printf("%s ", this.deck[i].name);
-        });
+        IntStream.range(0, this.deck.length).forEach(i -> System.out.printf("%s ", this.deck[i].name));
         System.out.println();
     }
 }
