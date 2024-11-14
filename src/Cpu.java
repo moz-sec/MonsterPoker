@@ -12,8 +12,8 @@ public class Cpu extends Player {
     String changeCard = new String();
     int exchangeCards[] = new int[5];
 
-    public Cpu(String name, Scanner scanner) {
-        super(name, scanner);
+    public Cpu(double attackPoint, double defensePoint, String name, Scanner scanner) {
+        super(attackPoint, defensePoint, name, scanner);
     }
 
     public void draw(List<Monster> cards) throws InterruptedException {
@@ -46,8 +46,8 @@ public class Cpu extends Player {
         if (this.changeCard.charAt(0) != '0') {
             Random random = new Random();
             for (int i = 0; i < this.changeCard.length(); i++) {
-                this.deck[Character.getNumericValue(this.changeCard.charAt(i)) - 1] =
-                        cards.get(random.nextInt(cards.size()));
+                this.deck[Character.getNumericValue(this.changeCard.charAt(i)) - 1] = cards
+                        .get(random.nextInt(cards.size()));
             }
             this.printCard();
         }

@@ -14,7 +14,8 @@ public class Player {
     Monster[] deck = new Monster[5];
     Random random;
     Scanner scanner;
-
+    HandRank handRank;
+    CalcPoints calcPoints = new CalcPoints(this.attackPoint, this.defensePoint);
     // 手札のカードとそれぞれの枚数
     // 例) スライム:2, サハギン:1, ドラゴン:2
     Map<Monster, Integer> handMap = new HashMap<>();
@@ -23,7 +24,9 @@ public class Player {
     double attackPoint;
     double defensePoint;
 
-    public Player(String name, Scanner scanner) {
+    public Player(double attackPoint, double defensePoint, String name, Scanner scanner) {
+        this.attackPoint = attackPoint;
+        this.defensePoint = defensePoint;
         this.name = name;
         this.hitPoint = 1000;
         this.random = new Random();
@@ -66,28 +69,12 @@ public class Player {
         this.printCard();
     }
 
-    public void judgeCardHand() throws InterruptedException {
+    public void handCheck() throws InterruptedException {
         this.handMap.clear();
 
         for (Monster card : deck) {
             handMap.merge(card, 1, Integer::sum);
         }
-
-        // System.out.printf("-------------------- %s\n", this.name);
-        // for (Map.Entry<Monster, Integer> entry : handMap.entrySet()) {
-        // System.out.println(entry.getKey().name + " : " + entry.getValue() + "枚");
-        // }
-        // System.out.println("--------------------");
-
-        // 役判定
-        // 5が1つある：ファイブ
-        // 4が1つある：フォー
-        // 3が1つあり，かつ，2が1つある：フルハウス
-        // 2が2つある：ツーペア
-        // 3が1つある：スリー
-        // 2が1つある：ペア
-        // 1が5つある：スペシャルファイブ
-        // 初期化
 
         boolean fiveOfKind = false;
         boolean fourOfKind = false;
@@ -103,7 +90,6 @@ public class Player {
             }
         }
 
-        HandRank handRank = null;
         if (handMap.size() == 5) {
             System.out.println("スペシャルファイブ！AP/DPは両方10倍！");
             handRank = HandRank.SPECIAL_FIVE;
@@ -128,19 +114,13 @@ public class Player {
         }
         Thread.sleep(1000);
 
-        calculatePoint(handRank);
-    }
-
-    public void calculatePoint(HandRank handRank) {
-        for (Map.Entry<Monster, Integer> entry : handMap.entrySet()) {
-            Monster monster = entry.getKey();
-            int count = entry.getValue();
-
-            this.attackPoint += monster.ap * count;
-            this.defensePoint += monster.dp * count;
-        }
-        this.attackPoint *= handRank.attackMultiplier;
-        this.defensePoint *= handRank.defenseMultiplier;
+        calcPoints.calculatePoint(handRank, handMap);
+        this.attackPoint = calcPoints.attackPoint;
+        this.defensePoint = calcPoints.defensePoint;
+        // System.out.println("====================");
+        // System.out.println(this.attackPoint);
+        // System.out.println(this.defensePoint);
+        // System.out.println("====================");
     }
 
     public void attack(Player opponentPlayer) throws InterruptedException {

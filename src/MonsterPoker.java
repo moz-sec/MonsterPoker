@@ -11,8 +11,8 @@ public class MonsterPoker {
 
     public MonsterPoker() {
         Scanner scanner = new Scanner(System.in);
-        this.player = new Player("Player", scanner);
-        this.cpu = new Cpu("CPU", scanner);
+        this.player = new Player(0, 0, "Player", scanner);
+        this.cpu = new Cpu(0, 0, "CPU", scanner);
 
         this.cards = new java.util.ArrayList<>();
         cards.add(new Monster("スライム", 10, 40));
@@ -49,15 +49,12 @@ public class MonsterPoker {
      */
     public void drawPhase() throws InterruptedException {
         player.draw(cards);
-
         cpu.draw(cards);
     }
 
     public void battlePhase() throws InterruptedException {
-        player.judgeCardHand();
-
-        cpu.judgeCardHand();
-
+        player.handCheck();
+        cpu.handCheck();
         System.out.println("バトル！！");
         player.attack(cpu);
         cpu.attack(player);
