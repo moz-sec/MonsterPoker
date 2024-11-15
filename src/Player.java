@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Arrays;
 
-
 /*
  * Player
  */
@@ -37,10 +36,11 @@ public class Player {
     public void draw(List<Monster> cards) throws InterruptedException {
         System.out.println("PlayerのDraw！");
         IntStream.range(0, this.deck.length).forEach(i -> {
-                    deck[i] = cards.get(this.random.nextInt(cards.size()));
-                    // テストコード
-                    // deck[i] = cards.get(2);
-                });
+            deck[i] = cards.get(this.random.nextInt(cards.size()));
+            // テストコード
+            //
+            deck[i] = cards.get(2);
+        });
         this.printCard();
 
         this.promptCardExchange(cards);
@@ -63,7 +63,8 @@ public class Player {
 
     public void exchangeCards(String exchangePositions, List<Monster> cards) {
         IntStream.range(0, exchangePositions.length()).forEach(
-                i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] = cards.get(this.random.nextInt(cards.size())));
+                i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] = cards
+                        .get(this.random.nextInt(cards.size())));
         this.printCard();
     }
 
