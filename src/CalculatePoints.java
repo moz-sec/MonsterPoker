@@ -4,9 +4,12 @@ public class CalculatePoints {
     double attackPoint;
     double defensePoint;
 
-    CalculatePoints(double attackPoint, double defensePoint) {
-        this.attackPoint = attackPoint;
-        this.defensePoint = defensePoint;
+    public double getAttackPoint() {
+        return attackPoint;
+    }
+
+    public double getDefensePoint() {
+        return defensePoint;
     }
 
     public void calculatePoint(HandRank handRank, Map<Monster, Integer> handMap) throws InterruptedException {
@@ -25,7 +28,15 @@ public class CalculatePoints {
         // System.out.println("====================");
     }
 
-    public void battle(Player attacker, Player blocker) {
+    public void battle(Player attacker, Player blocker) throws InterruptedException {
+        System.out.printf("%sのDrawした", attacker.name);
+
+        for (Map.Entry<Monster, Integer> entry : attacker.handMap.entrySet()) {
+            System.out.print(entry.getKey().name + " ");
+            Thread.sleep(500);
+        }
+        System.out.print("の攻撃！");
+        Thread.sleep(1000);
         if (blocker.defensePoint >= attacker.attackPoint) {
             System.out.printf("%sはノーダメージ！\n", blocker.name);
         } else {
