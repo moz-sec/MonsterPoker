@@ -25,11 +25,11 @@ public class CalculatePoints {
         // System.out.println("====================");
     }
 
-    public void battle(Player attacker, Player blocker) {
-        if (blocker.defensePoint >= attacker.attackPoint) {
+    public void battle(double attackPoints, Player blocker) {
+        if (blocker.defensePoint >= attackPoint) {
             System.out.printf("%sはノーダメージ！\n", blocker.name);
         } else {
-            double damage = attacker.attackPoint - blocker.defensePoint;
+            double damage = attackPoint - blocker.defensePoint;
             System.out.printf("%sは%.0fのダメージを受けた！\n", blocker.name, damage);
             blocker.hitPoint = blocker.hitPoint - damage;
         }
