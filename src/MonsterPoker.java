@@ -8,6 +8,7 @@ public class MonsterPoker {
     Player player;
     Cpu cpu;
     List<Monster> cards;
+    CalculatePoints calculatePoints;
 
     public MonsterPoker() {
         Scanner scanner = new Scanner(System.in);
@@ -58,6 +59,7 @@ public class MonsterPoker {
         System.out.println("バトル！！");
         player.attack(cpu);
         cpu.attack(player);
+
         System.out.println("PlayerのHPは" + player.hitPoint);
         System.out.println("CPUのHPは" + cpu.hitPoint);
     }

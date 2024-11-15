@@ -10,6 +10,7 @@ public class CalculatePoints {
     }
 
     public void calculatePoint(HandRank handRank, Map<Monster, Integer> handMap) throws InterruptedException {
+
         for (Map.Entry<Monster, Integer> entry : handMap.entrySet()) {
             Monster monster = entry.getKey();
             int count = entry.getValue();
@@ -25,11 +26,12 @@ public class CalculatePoints {
         // System.out.println("====================");
     }
 
-    public void battle(Player attacker, Player blocker) {
-        if (blocker.defensePoint >= attacker.attackPoint) {
+    public void battle(double attackPoint, Player blocker) {
+        System.out.printf("%sのモンスターによるガード！\n", blocker.name);
+        if (blocker.defensePoint >= attackPoint) {
             System.out.printf("%sはノーダメージ！\n", blocker.name);
         } else {
-            double damage = attacker.attackPoint - blocker.defensePoint;
+            double damage = attackPoint - blocker.defensePoint;
             System.out.printf("%sは%.0fのダメージを受けた！\n", blocker.name, damage);
             blocker.hitPoint = blocker.hitPoint - damage;
         }
