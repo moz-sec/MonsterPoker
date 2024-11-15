@@ -15,7 +15,7 @@ public class Player {
     Random random;
     HandRank handRank;
     Scanner scanner;
-    CalculatePoints calculatePoints = new CalculatePoints(this.attackPoint, this.defensePoint);
+    CalculatePoints calcPoints = new CalculatePoints(this.attackPoint, this.defensePoint);
     // 手札のカードとそれぞれの枚数
     // 例) スライム:2, サハギン:1, ドラゴン:2
     Map<Monster, Integer> handMap = new HashMap<>();
@@ -76,7 +76,7 @@ public class Player {
         boolean fourOfKind = false;
         boolean threeOfKind = false;
         int pairs = 0; // pair数を保持
-        
+
         for (int count : handMap.values()) {
             switch (count) {
                 case 2 -> pairs++;
@@ -110,13 +110,13 @@ public class Player {
         }
         Thread.sleep(1000);
 
-        calculatePoints.calculatePoint(handRank, handMap);
-        this.attackPoint = calculatePoints.attackPoint;
-        this.defensePoint = calculatePoints.defensePoint;
-        // System.out.println("====================");
-        // System.out.println(this.attackPoint);
-        // System.out.println(this.defensePoint);
-        // System.out.println("====================");
+        calcPoints.calculatePoint(handRank, handMap);
+        this.attackPoint = calcPoints.attackPoint;
+        this.defensePoint = calcPoints.defensePoint;
+        System.out.println("====================");
+        System.out.println(this.attackPoint);
+        System.out.println(this.defensePoint);
+        System.out.println("====================");
     }
 
     public void attack(Player opponentPlayer) throws InterruptedException {
@@ -128,7 +128,14 @@ public class Player {
         }
         System.out.print("の攻撃！");
         Thread.sleep(1000);
-        calculatePoints.battle(this.attackPoint, opponentPlayer);
+        System.out.printf("%sのモンスターによるガード！\n", opponentPlayer.name);
+        if (opponentPlayer.defensePoint >= this.attackPoint) {
+            System.out.printf("%sはノーダメージ！\n", opponentPlayer.name);
+        } else {
+            double damage = this.attackPoint - opponentPlayer.defensePoint;
+            System.out.printf("%sは%.0fのダメージを受けた！\n", opponentPlayer.name, damage);
+            opponentPlayer.hitPoint = opponentPlayer.hitPoint - damage;
+        }
     }
 
     public void printCard() {
