@@ -15,7 +15,7 @@ public class Player {
     Random random;
     HandRank handRank;
     Scanner scanner;
-    CalculatePoints calculatePoints = new CalculatePoints(this.attackPoint, this.defensePoint);
+    CalculatePoints calculatePoints = new CalculatePoints();
     // 手札のカードとそれぞれの枚数
     // 例) スライム:2, サハギン:1, ドラゴン:2
     Map<Monster, Integer> handMap = new HashMap<>();
@@ -119,17 +119,17 @@ public class Player {
         System.out.println("====================");
     }
 
-    public void attack(Player opponentPlayer) throws InterruptedException {
-        System.out.printf("%sのDrawした", this.name);
+    // public void attack(Player opponentPlayer) throws InterruptedException {
+    // System.out.printf("%sのDrawした", this.name);
 
-        for (Map.Entry<Monster, Integer> entry : this.handMap.entrySet()) {
-            System.out.print(entry.getKey().name + " ");
-            Thread.sleep(500);
-        }
-        System.out.print("の攻撃！");
-        Thread.sleep(1000);
-        calculatePoints.battle(this.attackPoint, opponentPlayer);
-    }
+    // for (Map.Entry<Monster, Integer> entry : this.handMap.entrySet()) {
+    // System.out.print(entry.getKey().name + " ");
+    // Thread.sleep(500);
+    // }
+    // System.out.print("の攻撃！");
+    // Thread.sleep(1000);
+    // calculatePoints.battle(this.attackPoint, opponentPlayer);
+    // }
 
     public void printCard() {
         System.out.print("[" + this.name + "]");
