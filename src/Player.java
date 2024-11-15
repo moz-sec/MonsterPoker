@@ -119,18 +119,6 @@ public class Player {
         System.out.println("====================");
     }
 
-    // public void attack(Player opponentPlayer) throws InterruptedException {
-    // System.out.printf("%sのDrawした", this.name);
-
-    // for (Map.Entry<Monster, Integer> entry : this.handMap.entrySet()) {
-    // System.out.print(entry.getKey().name + " ");
-    // Thread.sleep(500);
-    // }
-    // System.out.print("の攻撃！");
-    // Thread.sleep(1000);
-    // calculatePoints.battle(this.attackPoint, opponentPlayer);
-    // }
-
     public void printCard() {
         System.out.print("[" + this.name + "]");
         IntStream.range(0, this.deck.length).forEach(i -> System.out.printf("%s ", this.deck[i].name));
