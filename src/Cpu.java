@@ -9,36 +9,30 @@ import java.util.Scanner;
  * Cpu
  */
 public class Cpu extends Player {
-    String changeCard = new String();
-    int exchangeCards[] = new int[5];
+    private String changeCard = new String();
+    private int exchangeCards[] = new int[5];
 
-    public Cpu(double attackPoint, double defensePoint, String name, Scanner scanner) {
-        super(attackPoint, defensePoint, name, scanner);
+    public Cpu(String name, Scanner scanner) {
+        super(name, scanner);
     }
 
     public void draw(List<Monster> cards) throws InterruptedException {
         System.out.println("CPUのDraw！");
         Random random = new Random();
-        IntStream.range(0, this.deck.length)
-                .forEach(i -> this.deck[i] = cards.get(random.nextInt(cards.size())));
+        IntStream.range(0, this.getDeck().length)
+                .forEach(i -> this.getDeck()[i] = cards.get(random.nextInt(cards.size())));
         this.printCard();
 
-        // 交換するカードの決定
         this.decideExchangeCard();
 
-        // 交換するカード番号の表示
         this.printExchangeCardNumber();
 
-        // カードの交換
         this.exchangeCard(cards);
 
-        // 交換するカードの決定
         this.decideExchangeCard();
 
-        // 交換するカード番号の表示
         this.printExchangeCardNumber();
 
-        // カードの交換
         this.exchangeCard(cards);
     }
 
@@ -46,8 +40,8 @@ public class Cpu extends Player {
         if (this.changeCard.charAt(0) != '0') {
             Random random = new Random();
             for (int i = 0; i < this.changeCard.length(); i++) {
-                this.deck[Character.getNumericValue(this.changeCard.charAt(i)) - 1] = cards
-                        .get(random.nextInt(cards.size()));
+                this.getDeck()[Character.getNumericValue(this.changeCard.charAt(i)) - 1] =
+                        cards.get(random.nextInt(cards.size()));
             }
             this.printCard();
         }
@@ -61,7 +55,7 @@ public class Cpu extends Player {
         // 例) スライム:2, サハギン:1, ドラゴン:2
         Map<Monster, Integer> cardCount = new HashMap<>();
 
-        for (Monster card : this.deck) {
+        for (Monster card : this.getDeck()) {
             cardCount.put(card, cardCount.getOrDefault(card, 0) + 1);
         }
 
@@ -71,9 +65,9 @@ public class Cpu extends Player {
         // 0,1,0,2,3 といったdeckの場合，2枚目，4枚目，5枚目のカードをそれぞれ交換するかどうか決定し，例えば24といった形で決定する
         // 何番目のカードを交換するかを0,1で持つ配列の初期化
         // 例えばexchangeCards[]が{0,1,1,0,0}の場合は2,3枚目を交換の候補にする
-        for (int i = 0; i < this.deck.length; i++) {
+        for (int i = 0; i < this.getDeck().length; i++) {
             // 重複があれば交換候補から除外する
-            if (cardCount.get(this.deck[i]) > 1) {
+            if (cardCount.get(this.getDeck()[i]) > 1) {
                 this.exchangeCards[i] = 0; // 交換しない
             } else {
                 // 重複がない場合、1/2の確率で交換する
