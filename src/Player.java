@@ -1,4 +1,4 @@
-import java.util.stream.*;
+import java.util.stream.IntStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,23 +10,20 @@ import java.util.Arrays;
  * Player
  */
 public class Player {
-    String name;
-    Monster[] deck = new Monster[5];
-    Random random;
-    HandRank handRank;
-    Scanner scanner;
-    CalculatePoints calculatePoints = new CalculatePoints();
+    private String name;
+    private Monster[] deck = new Monster[5];
+    private Random random;
+    private HandRank handRank;
+    private Scanner scanner;
     // 手札のカードとそれぞれの枚数
     // 例) スライム:2, サハギン:1, ドラゴン:2
     Map<Monster, Integer> handMap = new HashMap<>();
 
-    double hitPoint;
-    double attackPoint;
-    double defensePoint;
+    private double hitPoint;
+    private double totalAttackPoint;
+    private double totalDefensePoint;
 
-    public Player(double attackPoint, double defensePoint, String name, Scanner scanner) {
-        this.attackPoint = attackPoint;
-        this.defensePoint = defensePoint;
+    public Player(String name, Scanner scanner) {
         this.name = name;
         this.hitPoint = 1000;
         this.random = new Random();
@@ -37,9 +34,6 @@ public class Player {
         System.out.println("PlayerのDraw！");
         IntStream.range(0, this.deck.length).forEach(i -> {
             deck[i] = cards.get(this.random.nextInt(cards.size()));
-            // テストコード
-            //
-            deck[i] = cards.get(2);
         });
         this.printCard();
 
@@ -63,8 +57,8 @@ public class Player {
 
     public void exchangeCards(String exchangePositions, List<Monster> cards) {
         IntStream.range(0, exchangePositions.length()).forEach(
-                i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] = cards
-                        .get(this.random.nextInt(cards.size())));
+                i -> this.deck[Character.getNumericValue(exchangePositions.charAt(i)) - 1] =
+                        cards.get(this.random.nextInt(cards.size())));
         this.printCard();
     }
 
@@ -110,18 +104,49 @@ public class Player {
         }
         Thread.sleep(1000);
 
-        calculatePoints.calculatePoint(handRank, handMap);
-        this.attackPoint = calculatePoints.attackPoint;
-        this.defensePoint = calculatePoints.defensePoint;
-        System.out.println("====================");
-        System.out.println(this.attackPoint);
-        System.out.println(this.defensePoint);
-        System.out.println("====================");
+        this.playerAttackDefensePointCalcurate();
     }
 
-    public void printCard() {
+    private void playerAttackDefensePointCalcurate() {
+        for (Map.Entry<Monster, Integer> entry : handMap.entrySet()) {
+            Monster monster = entry.getKey();
+            int count = entry.getValue();
+
+            this.totalAttackPoint += monster.getAttackPoint() * count;
+            this.totalAttackPoint += monster.getDefensePoint() * count;
+        }
+        this.totalAttackPoint *= handRank.attackMultiplier;
+        this.totalDefensePoint *= handRank.defenseMultiplier;
+    }
+
+    protected void printCard() {
         System.out.print("[" + this.name + "]");
-        IntStream.range(0, this.deck.length).forEach(i -> System.out.printf("%s ", this.deck[i].name));
+        IntStream.range(0, this.deck.length)
+                .forEach(i -> System.out.printf("%s ", this.deck[i].getName()));
         System.out.println();
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public Monster[] getDeck() {
+        return this.deck;
+    }
+
+    public double getHitPoint() {
+        return this.hitPoint;
+    }
+
+    public void setHitPoint(double hitPoint) {
+        this.hitPoint = hitPoint;
+    }
+
+    public double getAttackPoint() {
+        return this.totalAttackPoint;
+    }
+
+    public double getDefensePoint() {
+        return this.totalDefensePoint;
     }
 }
