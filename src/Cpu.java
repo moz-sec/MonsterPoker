@@ -10,17 +10,19 @@ import java.util.Scanner;
  */
 public class Cpu extends Player {
     private String changeCard = new String();
-    private int exchangeCards[] = new int[5];
+    private List<Integer> exchangeCards;
 
     public Cpu(String name, Scanner scanner) {
         super(name, scanner);
     }
 
     public void draw(List<Monster> cards) throws InterruptedException {
+        this.deck = new java.util.ArrayList<>();
+
         System.out.println("CPUのDraw！");
         Random random = new Random();
-        IntStream.range(0, this.getDeck().length)
-                .forEach(i -> this.getDeck()[i] = cards.get(random.nextInt(cards.size())));
+        IntStream.range(0, DECK_LENGTH)
+                .forEach(i -> this.deck.add(i, cards.get(random.nextInt(DECK_LENGTH))));
         this.printCard();
 
         this.decideExchangeCard();
@@ -40,8 +42,8 @@ public class Cpu extends Player {
         if (this.changeCard.charAt(0) != '0') {
             Random random = new Random();
             for (int i = 0; i < this.changeCard.length(); i++) {
-                this.getDeck()[Character.getNumericValue(this.changeCard.charAt(i)) - 1] =
-                        cards.get(random.nextInt(cards.size()));
+                this.getDeck().set(Character.getNumericValue(this.changeCard.charAt(i)) - 1,
+                        cards.get(random.nextInt(cards.size())));
             }
             this.printCard();
         }
@@ -61,24 +63,25 @@ public class Cpu extends Player {
 
         Random random = new Random();
 
+        this.exchangeCards = new java.util.ArrayList<>();
         // deckを走査して，重複するカード以外のカードをランダムに交換する
         // 0,1,0,2,3 といったdeckの場合，2枚目，4枚目，5枚目のカードをそれぞれ交換するかどうか決定し，例えば24といった形で決定する
         // 何番目のカードを交換するかを0,1で持つ配列の初期化
         // 例えばexchangeCards[]が{0,1,1,0,0}の場合は2,3枚目を交換の候補にする
-        for (int i = 0; i < this.getDeck().length; i++) {
+        for (Monster card : this.deck) {
             // 重複があれば交換候補から除外する
-            if (cardCount.get(this.getDeck()[i]) > 1) {
-                this.exchangeCards[i] = 0; // 交換しない
+            if (cardCount.get(card) > 1) {
+                this.exchangeCards.add(0);
             } else {
                 // 重複がない場合、1/2の確率で交換する
-                this.exchangeCards[i] = random.nextInt(2);
+                this.exchangeCards.add(random.nextInt(2));
             }
         }
     }
 
     private void printExchangeCardNumber() {
         this.changeCard = "";
-        IntStream.range(0, this.exchangeCards.length).filter(i -> this.exchangeCards[i] == 1)
+        IntStream.range(0, this.exchangeCards.size()).filter(i -> this.exchangeCards.get(i) == 1)
                 .forEach(i -> this.changeCard = this.changeCard + (i + 1));
         if (this.changeCard.length() == 0) {
             this.changeCard = "0";
