@@ -121,8 +121,6 @@ public class Player {
         }
         this.totalAttackPoint *= handRank.attackMultiplier;
         this.totalDefensePoint *= handRank.defenseMultiplier;
-        System.out.println("PlayerのAPは" + this.totalAttackPoint);
-        System.out.println("PlayerのDPは" + this.totalDefensePoint);
     }
 
     protected void printCard() {
